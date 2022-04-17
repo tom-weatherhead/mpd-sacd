@@ -50,15 +50,15 @@ class dvda_media_file_t : public dvda_media_t {
 	int fd;
 public:
 	dvda_media_file_t();
-	~dvda_media_file_t();
-	const char* get_name();
-	int64_t get_position();
-	int64_t get_size();
-	bool    open(const char* path);
-	bool    close();
-	bool    seek(int64_t position);
-	size_t  read(void* data, size_t size);
-	int64_t skip(int64_t bytes);
+	virtual ~dvda_media_file_t() override;
+	const char* get_name() override;
+	int64_t get_position() override;
+	int64_t get_size() override;
+	bool    open(const char* path) override;
+	bool    close() override;
+	bool    seek(int64_t position) override;
+	size_t  read(void* data, size_t size) override;
+	int64_t skip(int64_t bytes) override;
 };
 
 class dvda_media_stream_t : public dvda_media_t {
@@ -66,15 +66,15 @@ class dvda_media_stream_t : public dvda_media_t {
 	InputStreamPtr is;
 public:
 	dvda_media_stream_t();
-	~dvda_media_stream_t();
-	const char* get_name();
-	int64_t get_position();
-	int64_t get_size();
-	bool    open(const char* path);
-	bool    close();
-	bool    seek(int64_t position);
-	size_t  read(void* data, size_t size);
-	int64_t skip(int64_t bytes);
+	virtual ~dvda_media_stream_t() override;
+	const char* get_name() override;
+	int64_t get_position() override;
+	int64_t get_size() override;
+	bool    open(const char* path) override;
+	bool    close() override;
+	bool    seek(int64_t position) override;
+	size_t  read(void* data, size_t size) override;
+	int64_t skip(int64_t bytes) override;
 };
 
 #endif

@@ -26,7 +26,7 @@
 
 using std::vector;
 
-typedef class {
+/* typedef */ class audio_track_t {
 public:
 	int                 dvda_titleset;
 	int                 dvda_title;
@@ -37,7 +37,7 @@ public:
 	double              LR_dmx_coef[DOWNMIX_CHANNELS][2];
 	audio_stream_info_t audio_stream_info;
 	bool check_chmode(chmode_t chmode, bool downmix);
-} audio_track_t;
+};
 
 class track_list_t {
 	vector<audio_track_t> track_list;

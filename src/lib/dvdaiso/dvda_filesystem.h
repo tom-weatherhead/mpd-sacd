@@ -68,11 +68,11 @@ public:
 	iso_dvda_filesystem_t() : dvda_filesystem_t() {
 		iso_reader = nullptr;
 	}
-	bool mount(dvda_media_t* dvda_media);
-	void dismount();
-	bool get_name(char* name);
-	dvda_fileobject_t* file_open(const char* name);
-	void file_close(dvda_fileobject_t* fileobject);
+	bool mount(dvda_media_t* dvda_media) override;
+	void dismount() override;
+	bool get_name(char* name) override;
+	dvda_fileobject_t* file_open(const char* name) override;
+	void file_close(dvda_fileobject_t* fileobject) override;
 };
 
 class iso_dvda_fileobject_t : public dvda_fileobject_t {
@@ -86,12 +86,12 @@ public:
 		fo = nullptr;
 		lba = 0;
 	}
-	~iso_dvda_fileobject_t() {
+	virtual ~iso_dvda_fileobject_t() override {
 	}
-	bool open(const char* path);
-	bool close();
-	int read(void* buffer, int count);
-	bool seek(int64_t offset);
+	bool open(const char* path) override;
+	bool close() override;
+	int read(void* buffer, int count) override;
+	bool seek(int64_t offset) override;
 };
 
 #endif

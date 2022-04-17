@@ -45,14 +45,14 @@ class sacd_media_file_t : public sacd_media_t {
 	int fd;
 public:
 	sacd_media_file_t();
-	~sacd_media_file_t();
-	bool    open(const char* path);
-	bool    close();
-	bool    seek(int64_t position);
-	int64_t get_position();
-	int64_t get_size();
-	size_t  read(void* data, size_t size);
-	int64_t skip(int64_t bytes);
+	virtual ~sacd_media_file_t() override;
+	bool    open(const char* path) override;
+	bool    close() override;
+	bool    seek(int64_t position) override;
+	int64_t get_position() override;
+	int64_t get_size() override;
+	size_t  read(void* data, size_t size) override;
+	int64_t skip(int64_t bytes) override;
 };
 
 class sacd_media_stream_t : public sacd_media_t {
@@ -60,14 +60,14 @@ class sacd_media_stream_t : public sacd_media_t {
 	InputStreamPtr is;
 public:
 	sacd_media_stream_t();
-	~sacd_media_stream_t();
-	bool    open(const char* path);
-	bool    close();
-	bool    seek(int64_t position);
-	int64_t get_position();
-	int64_t get_size();
-	size_t  read(void* data, size_t size);
-	int64_t skip(int64_t bytes);
+	virtual ~sacd_media_stream_t() override;
+	bool    open(const char* path) override;
+	bool    close() override;
+	bool    seek(int64_t position) override;
+	int64_t get_position() override;
+	int64_t get_size() override;
+	size_t  read(void* data, size_t size) override;
+	int64_t skip(int64_t bytes) override;
 };
 
 #endif

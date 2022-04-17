@@ -117,14 +117,14 @@ class mlp_audio_stream_t : public audio_stream_t {
 	bool                 do_check;
 public:
 	static int truehd_channels(int chanmap);
-	virtual audio_stream_info_t* get_info(uint8_t* buf, int buf_size);
-	virtual int init(uint8_t* buf, int buf_size, bool downmix, bool reset_statistics = true);
-	virtual int decode(uint8_t* data, int* data_size, uint8_t* buf, int buf_size);
-	virtual int resync(uint8_t* buf, int buf_size);
-	virtual int get_stream_id() {
+	virtual audio_stream_info_t* get_info(uint8_t* buf, int buf_size) override;
+	virtual int init(uint8_t* buf, int buf_size, bool downmix, bool reset_statistics = true) override;
+	virtual int decode(uint8_t* data, int* data_size, uint8_t* buf, int buf_size) override;
+	virtual int resync(uint8_t* buf, int buf_size) override;
+	virtual int get_stream_id() override {
 		return MLP_STREAM_ID;
 	}
-	virtual void set_check(bool check) {
+	virtual void set_check(bool check) override {
 		do_check = check;
 	}
 };
@@ -140,11 +140,11 @@ class pcm_audio_stream_t : public audio_stream_t {
 	uint8_t pcm_group1_pack[2 * 4 * sizeof(int32_t)];
 	uint8_t pcm_group2_pack[2 * 4 * sizeof(int32_t)];
 public:
-	virtual audio_stream_info_t* get_info(uint8_t* buf, int buf_size);
-	virtual int init(uint8_t* buf, int buf_size, bool downmix, bool reset_statistics = true);
-	virtual int decode(uint8_t* data, int* data_size, uint8_t* buf, int buf_size);
-	virtual int resync(uint8_t* buf, int buf_size);
-	virtual int get_stream_id() {
+	virtual audio_stream_info_t* get_info(uint8_t* buf, int buf_size) override;
+	virtual int init(uint8_t* buf, int buf_size, bool downmix, bool reset_statistics = true) override;
+	virtual int decode(uint8_t* data, int* data_size, uint8_t* buf, int buf_size) override;
+	virtual int resync(uint8_t* buf, int buf_size) override;
+	virtual int get_stream_id() override {
 		return PCM_STREAM_ID;
 	}
 };

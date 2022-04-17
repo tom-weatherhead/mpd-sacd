@@ -68,11 +68,11 @@ class dvda_sector_pointer_t : public aob_object_t {
 	uint32_t last;
 public:
 	dvda_sector_pointer_t(dvda_track_t* track, ats_track_sector_t* p_ats_track_sector, int index);
-	virtual ~dvda_sector_pointer_t();
+	virtual ~dvda_sector_pointer_t() override;
 	uint32_t get_index();
-	uint32_t get_length_pts();
-	uint32_t get_first();
-	uint32_t get_last();
+	uint32_t get_length_pts() override;
+	uint32_t get_first() override;
+	uint32_t get_last() override;
 };
 
 class dvda_track_t : public aob_object_t {
@@ -84,16 +84,16 @@ class dvda_track_t : public aob_object_t {
 	int downmix_matrix;
 public:
 	dvda_track_t(ats_track_timestamp_t* p_ats_track_timestamp, int track);
-	~dvda_track_t();
+	~dvda_track_t() override;
 	int sector_pointer_count();
 	dvda_sector_pointer_t& get_sector_pointer(int sector_pointer_index);
 	void append(dvda_sector_pointer_t& dvda_sector_pointer);
 	uint32_t get_index();
 	int get_track();
 	int get_downmix_matrix();
-	uint32_t get_length_pts();
-	uint32_t get_first();
-	uint32_t get_last();
+	uint32_t get_length_pts() override;
+	uint32_t get_first() override;
+	uint32_t get_last() override;
 };
 
 class dvda_title_t : public dvda_object_t {
