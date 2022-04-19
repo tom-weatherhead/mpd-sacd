@@ -37,23 +37,24 @@ static inline int has_multi_channel(scarletbook_handle_t* handle) {
 	return handle->mulch_area_idx != -1;
 }
 
-static inline int has_both_channels(scarletbook_handle_t* handle) {
-	return handle->twoch_area_idx != -1 && handle->mulch_area_idx != -1;
-}
+// static inline int has_both_channels(scarletbook_handle_t* handle) {
+// 	return handle->twoch_area_idx != -1 && handle->mulch_area_idx != -1;
+// }
 
-static inline area_toc_t* get_two_channel(scarletbook_handle_t* handle) {
-	return handle->twoch_area_idx == -1 ? 0 : handle->area[handle->twoch_area_idx].area_toc;
-}
+// static inline area_toc_t* get_two_channel(scarletbook_handle_t* handle) {
+// 	return handle->twoch_area_idx == -1 ? 0 : handle->area[handle->twoch_area_idx].area_toc;
+// }
 
-static inline area_toc_t* get_multi_channel(scarletbook_handle_t* handle) {
-	return handle->mulch_area_idx == -1 ? 0 : handle->area[handle->mulch_area_idx].area_toc;
-}
+// static inline area_toc_t* get_multi_channel(scarletbook_handle_t* handle) {
+// 	return handle->mulch_area_idx == -1 ? 0 : handle->area[handle->mulch_area_idx].area_toc;
+// }
 
 typedef struct {
 	uint32_t    id;
 	const char* name;
 } codepage_id_t;
 
+#if defined(HAVE_ICONV)
 static codepage_id_t codepage_ids[] = {
 	{CP_ACP, character_set[0]},
 	{20127,  character_set[1]},
@@ -64,6 +65,7 @@ static codepage_id_t codepage_ids[] = {
 	{950,    character_set[6]},
 	{28591,  character_set[7]},
 };
+#endif
 
 static inline std::string charset_convert(const char* instring, size_t insize, uint8_t codepage_index) {
 	std::string utf8_string;
@@ -90,17 +92,17 @@ static inline std::string charset_convert(const char* instring, size_t insize, u
 	return utf8_string;
 }
 
-static inline int get_channel_count(audio_frame_info_t* frame_info) {
-  if (frame_info->channel_bit_2 == 1 && frame_info->channel_bit_3 == 0) {
-		return 6;
-  }
-  else if (frame_info->channel_bit_2 == 0 && frame_info->channel_bit_3 == 1) {
-		return 5;
-  }
-  else {
-		return 2;
-  }
-}
+// static inline int get_channel_count(audio_frame_info_t* frame_info) {
+//   if (frame_info->channel_bit_2 == 1 && frame_info->channel_bit_3 == 0) {
+// 		return 6;
+//   }
+//   else if (frame_info->channel_bit_2 == 0 && frame_info->channel_bit_3 == 1) {
+// 		return 5;
+//   }
+//   else {
+// 		return 2;
+//   }
+// }
 
 sacd_disc_t::sacd_disc_t() {
 	sacd_media = nullptr;
@@ -542,14 +544,14 @@ bool sacd_disc_t::seek(double seconds) {
 
 bool sacd_disc_t::read_blocks_raw(uint32_t lb_start, uint32_t block_count, uint8_t* data) {
 	switch (sector_size) {
-	case SACD_LSN_SIZE: 
+	case SACD_LSN_SIZE:
 		sacd_media->seek((uint64_t)lb_start * (uint64_t)SACD_LSN_SIZE);
 		if (sacd_media->read(data, block_count * SACD_LSN_SIZE) != block_count * SACD_LSN_SIZE) {
 			sector_bad_reads++;
 			return false;
 		}
 		break;
-	case SACD_PSN_SIZE: 
+	case SACD_PSN_SIZE:
 		for (uint32_t i = 0; i < block_count; i++) {
 			sacd_media->seek((uint64_t)(lb_start + i) * (uint64_t)SACD_PSN_SIZE + 12);
 			if (sacd_media->read(data + i * SACD_LSN_SIZE, SACD_LSN_SIZE) != SACD_LSN_SIZE) {
@@ -711,7 +713,7 @@ bool sacd_disc_t::read_area_toc(int area_idx) {
 	if (area_toc->version.major > SUPPORTED_VERSION_MAJOR || area_toc->version.minor > SUPPORTED_VERSION_MINOR) {
 		return false;
 	}
-	
+
 	// is this the 2 channel?
 	if (area_toc->channel_count == 2 && area_toc->loudspeaker_config == 0) {
 		sb_handle.twoch_area_idx = area_idx;

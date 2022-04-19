@@ -110,6 +110,9 @@ static inline uint64_t bswap_64(uint64_t x) {
  * @see av_fast_realloc()
  */
 void* av_realloc(void* ptr, unsigned int size);
+void *av_fast_realloc(void *ptr, unsigned int *size, unsigned int min_size);
+
+void av_free(void* ptr);
 
 /*****************************************************************************/
 /***   avcodec.h                                                           ***/
@@ -371,6 +374,10 @@ static inline void init_get_bits(GetBitContext *s,
 	int name##_index = (gb)->index;\
 	int name##_cache = 0;\
 
+// ThAW 2022-04-18 :
+#define OPEN_READER_NO_CACHE(name, gb)\
+	int name##_index = (gb)->index;\
+
 #define CLOSE_READER(name, gb)\
 	(gb)->index = name##_index;\
 
@@ -472,8 +479,8 @@ static inline unsigned int get_bits1(GetBitContext* s) {
 }
 
 static inline void skip_bits(GetBitContext* s, int n) {
-	OPEN_READER(re, s)
-	UPDATE_CACHE(re, s)
+	OPEN_READER_NO_CACHE(re, s) // was OPEN_READER(re, s)
+	// UPDATE_CACHE(re, s)	// ThAW: Don't update the cache if it will never be used
 	LAST_SKIP_BITS(re, s, n)
 	CLOSE_READER(re, s)
 }
@@ -647,7 +654,7 @@ extern int mlp_av_log_level;
 
 void av_log(void* avctx, int level, const char* fmt, ...);
 void mlp_av_vlog(void* avctx, int level, const char* fmt, va_list);
-int  mlp_av_log_get_level();
+int  mlp_av_log_get_level(void);
 void mlp_av_log_set_level(int level);
 void mlp_av_log_set_callback(void (*callback)(void* avctx, int level, const char* fmt, va_list vl));
 void mlp_av_log_default_callback(void* avctx, int level, const char* fmt, va_list vl);

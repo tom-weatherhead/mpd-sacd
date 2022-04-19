@@ -27,39 +27,45 @@ static void ff_mlp_filter_channel(int32_t *state, const int32_t *coeff,
                                   unsigned int filter_shift, int32_t mask, int blocksize,
                                   int32_t *sample_buffer)
 {
-    int32_t *firbuf = state;
-    int32_t *iirbuf = state + MAX_BLOCKSIZE + MAX_FIR_ORDER;
-    const int32_t *fircoeff = coeff;
-    const int32_t *iircoeff = coeff + MAX_FIR_ORDER;
-    int i;
+	int32_t *firbuf = state;
+	int32_t *iirbuf = state + MAX_BLOCKSIZE + MAX_FIR_ORDER;
+	const int32_t *fircoeff = coeff;
+	const int32_t *iircoeff = coeff + MAX_FIR_ORDER;
+	int i;
 
-    for (i = 0; i < blocksize; i++) {
-        int32_t residual = *sample_buffer;
-        unsigned int order;
-        int64_t accum = 0;
-        int32_t result;
+	for (i = 0; i < blocksize; i++) {
+		int32_t residual = *sample_buffer;
+		/* unsigned */ int order;
+		int64_t accum = 0;
+		int32_t result;
 
-        for (order = 0; order < firorder; order++)
-            accum += (int64_t) firbuf[order] * fircoeff[order];
-        for (order = 0; order < iirorder; order++)
-            accum += (int64_t) iirbuf[order] * iircoeff[order];
+		for (order = 0; order < firorder; order++) {
+			accum += (int64_t) firbuf[order] * fircoeff[order];
+		}
 
-        accum  = accum >> filter_shift;
-        result = (accum + residual) & mask;
+		for (order = 0; order < iirorder; order++) {
+			accum += (int64_t) iirbuf[order] * iircoeff[order];
+		}
 
-        *--firbuf = result;
-        *--iirbuf = result - accum;
+		accum  = accum >> filter_shift;
+		result = (accum + residual) & mask;
 
-        *sample_buffer = result;
-				sample_buffer += MAX_CHANNELS_ALL;
-    }
+		*--firbuf = result;
+		*--iirbuf = result - accum;
+
+		*sample_buffer = result;
+		sample_buffer += MAX_CHANNELS_ALL;
+	}
 }
 
+void ff_mlp_init(DSPContext* c, AVCodecContext *avctx);
 void ff_mlp_init_x86(DSPContext* c, AVCodecContext *avctx);
 
 void ff_mlp_init(DSPContext* c, AVCodecContext *avctx)
 {
-    c->mlp_filter_channel = ff_mlp_filter_channel;
-    if (ARCH_X86)
-        ff_mlp_init_x86(c, avctx);
+	c->mlp_filter_channel = ff_mlp_filter_channel;
+
+	if (ARCH_X86) {
+		ff_mlp_init_x86(c, avctx);
+	}
 }

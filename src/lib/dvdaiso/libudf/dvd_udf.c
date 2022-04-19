@@ -395,13 +395,18 @@ static int UDFPartition( uint8_t *data, uint16_t *Flags, uint16_t *Number,
  */
 static int UDFLogVolume( uint8_t *data, char *VolumeDescriptor )
 {
-  uint32_t lbsize, MT_L, N_PM;
-  Unicodedecode(&data[84], 128, VolumeDescriptor);
-  lbsize = GETN4(212);  /* should be 2048 */
-  MT_L = GETN4(264);    /* should be 6 */
-  N_PM = GETN4(268);    /* should be 1 */
-  if (lbsize != DVD_VIDEO_LB_LEN) return 1;
-  return 0;
+	uint32_t lbsize; //, MT_L, N_PM;
+
+	Unicodedecode(&data[84], 128, VolumeDescriptor);
+	lbsize = GETN4(212);  /* should be 2048 */
+	// MT_L = GETN4(264);    /* should be 6 */
+	// N_PM = GETN4(268);    /* should be 1 */
+
+	if (lbsize != DVD_VIDEO_LB_LEN) {
+		return 1;
+	}
+
+	return 0;
 }
 
 static int UDFFileEntry( uint8_t *data, uint8_t *FileType,
@@ -460,7 +465,7 @@ static int UDFFileEntry( uint8_t *data, uint8_t *FileType,
 			if ( ad->Location == 0 ) {
 				ad->Flags     = ad_i.Flags;
 				ad->Location  = ad_i.Location;
-				ad->Partition = ad_i.Partition; 
+				ad->Partition = ad_i.Partition;
 			}
 			ad->Length += ad_i.Length;
 		}
@@ -858,13 +863,14 @@ static int UDFGetDescriptor( dvd_reader_t *device, int id,
   uint32_t lbnum, MVDS_location, MVDS_length;
   struct avdp_t avdp;
   uint16_t TagID;
-  uint32_t lastsector;
-  int i, terminate;
+  // uint32_t lastsector;
+  int i; // , terminate;
   int desc_found = 0;
+
   /* Find Anchor */
-  lastsector = 0;
+  // lastsector = 0;
   lbnum = 256;   /* Try #1, prime anchor */
-  terminate = 0;
+  // terminate = 0;
   if(bufsize < DVD_VIDEO_LB_LEN)
     return 0;
 

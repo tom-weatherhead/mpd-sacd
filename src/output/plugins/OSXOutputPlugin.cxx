@@ -160,13 +160,13 @@ OSXOutput::Create(EventLoop &, const ConfigBlock &block)
 	static constexpr AudioObjectPropertyAddress default_system_output_device{
 		kAudioHardwarePropertyDefaultSystemOutputDevice,
 		kAudioObjectPropertyScopeOutput,
-		kAudioObjectPropertyElementMaster,
+		kAudioObjectPropertyElementMain,	// was kAudioObjectPropertyElementMaster
 	};
 
 	static constexpr AudioObjectPropertyAddress default_output_device{
 		kAudioHardwarePropertyDefaultOutputDevice,
 		kAudioObjectPropertyScopeOutput,
-		kAudioObjectPropertyElementMaster
+		kAudioObjectPropertyElementMain,	// was kAudioObjectPropertyElementMaster
 	};
 
 	const auto &aopa =
@@ -195,9 +195,10 @@ int
 OSXOutput::GetVolume()
 {
 	static constexpr AudioObjectPropertyAddress aopa = {
-		kAudioHardwareServiceDeviceProperty_VirtualMasterVolume,
+		// kAudioHardwareServiceDeviceProperty_VirtualMasterVolume,
+		kAudioHardwareServiceDeviceProperty_VirtualMainVolume, // Replaces the line above
 		kAudioObjectPropertyScopeOutput,
-		kAudioObjectPropertyElementMaster,
+		kAudioObjectPropertyElementMain,	// was kAudioObjectPropertyElementMaster
 	};
 
 	const auto vol = AudioObjectGetPropertyDataT<Float32>(dev_id,
@@ -211,9 +212,10 @@ OSXOutput::SetVolume(unsigned new_volume)
 {
 	Float32 vol = new_volume / 100.0;
 	static constexpr AudioObjectPropertyAddress aopa = {
-		kAudioHardwareServiceDeviceProperty_VirtualMasterVolume,
+		// kAudioHardwareServiceDeviceProperty_VirtualMasterVolume,
+		kAudioHardwareServiceDeviceProperty_VirtualMainVolume, // Replaces the line above
 		kAudioObjectPropertyScopeOutput,
-		kAudioObjectPropertyElementMaster
+		kAudioObjectPropertyElementMain,	// was kAudioObjectPropertyElementMaster
 	};
 	UInt32 size = sizeof(vol);
 	OSStatus status = AudioObjectSetPropertyData(dev_id,
@@ -366,25 +368,25 @@ osx_output_set_device_format(AudioDeviceID dev_id,
 	static constexpr AudioObjectPropertyAddress aopa_device_streams = {
 		kAudioDevicePropertyStreams,
 		kAudioObjectPropertyScopeOutput,
-		kAudioObjectPropertyElementMaster
+		kAudioObjectPropertyElementMain,	// was kAudioObjectPropertyElementMaster
 	};
 
 	static constexpr AudioObjectPropertyAddress aopa_stream_direction = {
 		kAudioStreamPropertyDirection,
 		kAudioObjectPropertyScopeOutput,
-		kAudioObjectPropertyElementMaster
+		kAudioObjectPropertyElementMain,	// was kAudioObjectPropertyElementMaster
 	};
 
 	static constexpr AudioObjectPropertyAddress aopa_stream_phys_formats = {
 		kAudioStreamPropertyAvailablePhysicalFormats,
 		kAudioObjectPropertyScopeOutput,
-		kAudioObjectPropertyElementMaster
+		kAudioObjectPropertyElementMain,	// was kAudioObjectPropertyElementMaster
 	};
 
 	static constexpr AudioObjectPropertyAddress aopa_stream_phys_format = {
 		kAudioStreamPropertyPhysicalFormat,
 		kAudioObjectPropertyScopeOutput,
-		kAudioObjectPropertyElementMaster
+		kAudioObjectPropertyElementMain,	// was kAudioObjectPropertyElementMaster
 	};
 
 	OSStatus err;
@@ -484,7 +486,7 @@ osx_output_hog_device(AudioDeviceID dev_id, bool hog) noexcept
 	static constexpr AudioObjectPropertyAddress aopa = {
 		kAudioDevicePropertyHogMode,
 		kAudioObjectPropertyScopeOutput,
-		kAudioObjectPropertyElementMaster
+		kAudioObjectPropertyElementMain,	// was kAudioObjectPropertyElementMaster
 	};
 
 	pid_t hog_pid;
@@ -538,7 +540,7 @@ IsAudioDeviceName(AudioDeviceID id, const char *expected_name) noexcept
 	static constexpr AudioObjectPropertyAddress aopa_name{
 		kAudioObjectPropertyName,
 		kAudioObjectPropertyScopeGlobal,
-		kAudioObjectPropertyElementMaster,
+		kAudioObjectPropertyElementMain,	// was kAudioObjectPropertyElementMaster
 	};
 
 	char actual_name[256];
@@ -561,8 +563,7 @@ FindAudioDeviceByName(const char *name)
 	static constexpr AudioObjectPropertyAddress aopa_hw_devices{
 		kAudioHardwarePropertyDevices,
 		kAudioObjectPropertyScopeGlobal,
-		// kAudioObjectPropertyElementMaster,
-		kAudioObjectPropertyElementMain,
+		kAudioObjectPropertyElementMain,	// was kAudioObjectPropertyElementMaster
 	};
 
 	const auto ids =

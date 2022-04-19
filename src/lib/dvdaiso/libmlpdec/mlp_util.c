@@ -21,6 +21,7 @@
 void av_freep(void* arg);
 void* ff_realloc_static(void* ptr, unsigned int size);
 void ff_mlp_init(DSPContext* c, AVCodecContext *avctx);
+void ff_mlp_init_x86(DSPContext* c, AVCodecContext *avctx);
 
 /*****************************************************************************/
 /***   utils.c                                                             ***/
@@ -84,8 +85,8 @@ static int build_table(VLC *vlc, int table_nb_bits,
                        const void *symbols, int symbols_wrap, int symbols_size,
                        uint32_t code_prefix, int n_prefix, int flags)
 {
-    int i, j, k, n, table_size, table_index, nb, n1, index, code_prefix2, symbol;
-    uint32_t code;
+    int i, j, k, n, table_size, table_index, nb, n1, index, symbol;
+    uint32_t code, code_prefix2;
     VLC_TYPE (*table)[2];
 
     table_size = 1 << table_nb_bits;
@@ -288,7 +289,7 @@ int av_crc_init(AVCRC *ctx, int le, int bits, uint32_t poly, int ctx_size){
     }
     ctx[256]=1;
 #if !CONFIG_SMALL
-    if(ctx_size >= sizeof(AVCRC)*1024)
+    if(ctx_size >= (int)sizeof(AVCRC)*1024)
         for (i = 0; i < 256; i++)
             for(j=0; j<3; j++)
                 ctx[256*(j+1) + i]= (ctx[256*j + i]>>8) ^ ctx[ ctx[256*j + i]&0xFF ];
@@ -334,8 +335,11 @@ uint32_t av_crc(const AVCRC *ctx, uint32_t crc, const uint8_t *buffer, size_t le
 int mlp_av_log_level = AV_LOG_INFO;
 
 void mlp_av_log_default_callback(void* avctx, int level, const char* fmt, va_list vl) {
-	if (level > mlp_av_log_level)
+
+	if (level > mlp_av_log_level) {
 		return;
+	}
+
 	vfprintf(stderr, fmt, vl);
 }
 
@@ -385,8 +389,9 @@ void* av_realloc(void* ptr, unsigned int size) {
 }
 
 void av_free(void* ptr) {
-	if (ptr)
+	if (ptr) {
 		free(ptr);
+	}
 }
 
 void av_freep(void* arg) {
@@ -395,7 +400,7 @@ void av_freep(void* arg) {
 	*ptr = NULL;
 }
 
-void* av_mallocz(unsigned int size) {
+static void * av_mallocz(unsigned int size) {
 	void* ptr;
 	ptr = av_malloc(size);
 	if (ptr)
@@ -461,7 +466,7 @@ static unsigned int last_static = 0;
 static unsigned int allocated_static = 0;
 static void** array_static = NULL;
 
-void* av_mallocz_static(unsigned int size) {
+static void * av_mallocz_static(unsigned int size) {
 	void* ptr = av_mallocz(size);
 	if (ptr) {
 		array_static = (void**)av_fast_realloc(array_static, &allocated_static, sizeof(void*)*(last_static + 1));
@@ -473,16 +478,23 @@ void* av_mallocz_static(unsigned int size) {
 }
 
 void* ff_realloc_static(void* ptr, unsigned int size) {
-	int i;
-	if (!ptr)
+	unsigned int i;
+
+	if (!ptr) {
 		return av_mallocz_static(size);
+	}
+
 	/* Look for the old ptr */
+
 	for (i = 0; i < last_static; i++) {
+
 		if (array_static[i] == ptr) {
 			array_static[i] = av_realloc(array_static[i], size);
+
 			return array_static[i];
 		}
 	}
+
 	return NULL;
 }
 

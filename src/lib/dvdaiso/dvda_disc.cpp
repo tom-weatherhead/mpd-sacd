@@ -317,7 +317,7 @@ bool dvda_disc_t::read_frame(uint8_t* frame_data, size_t* frame_size) {
 			}
 			goto decode_run_read_stream_start;
 		}
-		return false;
+		// return false; // ThAW: Unreachable
 	}
 	major_sync_0 = false;
 	track_stream.move_read_ptr(bytes_decoded);

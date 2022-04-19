@@ -29,21 +29,21 @@
 #include "tag/Handler.hxx"
 #include "dvda_metabase.h"
 
-static auto utf2xml = [](auto src) {
-	auto dst{ std::string() };
-	for (auto i = 0; src[i] != 0; i++) {
-		if (src[i] == '\r') {
-			dst += "&#13;";
-		}
-		else if (src[i] == '\n') {
-			dst += "&#10;";
-		}
-		else {
-			dst += string(&src[i], 1);
-		}
-	}
-	return dst;
-};
+// static auto utf2xml = [](auto src) {
+// 	auto dst{ std::string() };
+// 	for (auto i = 0; src[i] != 0; i++) {
+// 		if (src[i] == '\r') {
+// 			dst += "&#13;";
+// 		}
+// 		else if (src[i] == '\n') {
+// 			dst += "&#10;";
+// 		}
+// 		else {
+// 			dst += string(&src[i], 1);
+// 		}
+// 	}
+// 	return dst;
+// };
 
 static auto xml2utf = [](auto src) {
 	auto dst{ std::string() };

@@ -111,7 +111,7 @@ typedef struct SubStream {
 		int8_t      output_shift[MAX_CHANNELS_ALL];
 
     //! Running XOR of all output samples.
-    int32_t     lossless_check_data;
+    uint32_t     lossless_check_data;
 
 } SubStream;
 
@@ -453,6 +453,7 @@ static int read_restart_header(MLPDecodeContext *m, GetBitContext *gbp,
 
     for (ch = s->min_channel; ch <= s->max_channel; ch++) {
         ChannelParams *cp = &m->channel_params[ch];
+
         cp->filter_params[FIR].order = 0;
         cp->filter_params[IIR].order = 0;
         cp->filter_params[FIR].shift = 0;
@@ -460,7 +461,7 @@ static int read_restart_header(MLPDecodeContext *m, GetBitContext *gbp,
 
         /* Default audio coding is 24-bit raw PCM. */
         cp->huff_offset      = 0;
-        cp->sign_huff_offset = (-1) << 23;
+        cp->sign_huff_offset = 0xffffffff << 23; // (-1) << 23;
         cp->codebook         = 0;
         cp->huff_lsbs        = 24;
     }
@@ -549,7 +550,8 @@ static int read_filter_params(MLPDecodeContext *m, GetBitContext *gbp,
 static int read_matrix_params(MLPDecodeContext *m, unsigned int substr, GetBitContext *gbp)
 {
     SubStream *s = &m->substream[substr];
-    unsigned int mat, ch;
+    unsigned int mat; //, ch;
+	int ch;
     const int max_primitive_matrices = m->avctx->codec_id == CODEC_ID_MLP
                                      ? MAX_MATRICES_MLP
                                      : MAX_MATRICES_TRUEHD;
@@ -1137,14 +1139,19 @@ error:
 }
 
 AVCodec mlp_decoder = {
-    "mlp",
-    CODEC_TYPE_AUDIO,
-    CODEC_ID_MLP,
-    sizeof(MLPDecodeContext),
-    mlp_decode_init,
-    NULL,
-    NULL,
-    read_access_unit
+	"mlp",
+	CODEC_TYPE_AUDIO,
+	CODEC_ID_MLP,
+	sizeof(MLPDecodeContext),
+	mlp_decode_init,
+	NULL,
+	NULL,
+	read_access_unit,
+	// warning: missing field 'capabilities' initializer
+	// ThAW: Added:
+	0,		// int capabilities;
+	NULL,	// struct AVCodec* next;
+	NULL	// void (*flush)(AVCodecContext* avctx);
 };
 
 #if CONFIG_TRUEHD_DECODER
@@ -1156,6 +1163,10 @@ AVCodec truehd_decoder = {
     mlp_decode_init,
     NULL,
     NULL,
-    read_access_unit
+    read_access_unit,
+	// ThAW: Added:
+	0,		// int capabilities;
+	NULL,	// struct AVCodec* next;
+	NULL	// void (*flush)(AVCodecContext* avctx);
 };
 #endif /* CONFIG_TRUEHD_DECODER */

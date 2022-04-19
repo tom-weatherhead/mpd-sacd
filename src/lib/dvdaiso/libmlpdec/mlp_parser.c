@@ -150,7 +150,7 @@ typedef struct MLPParseContext
     int num_substreams;
 } MLPParseContext;
 
-static av_cold int mlp_init(AVCodecParserContext *s)
+static av_cold int mlp_init(AVCodecParserContext *s)	// s is unused
 {
     ff_mlp_init_crc();
     return 0;
@@ -289,9 +289,13 @@ lost_sync:
 }
 
 AVCodecParser mlp_parser = {
-    { CODEC_ID_MLP, CODEC_ID_TRUEHD },
-    sizeof(MLPParseContext),
-    mlp_init,
-    mlp_parse,
-    NULL,
+	{ CODEC_ID_MLP, CODEC_ID_TRUEHD },
+	sizeof(MLPParseContext),
+	mlp_init,
+	mlp_parse,
+	NULL,
+	// warning: missing field 'split' initializer
+	// ThAW: Added:
+	NULL,	// int  (*split)(AVCodecContext* avctx, const uint8_t* buf, int buf_size);
+	NULL	// struct AVCodecParser* next;
 };
