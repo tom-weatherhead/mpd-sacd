@@ -779,7 +779,7 @@ static int read_block_data(MLPDecodeContext *m, GetBitContext *gbp,
     s->blockpos += s->blocksize;
 
     if (s->data_check_present) {
-        if (get_bits_count(gbp) != expected_stream_pos)
+        if (get_bits_count(gbp) != (int)expected_stream_pos)
             av_log(m->avctx, AV_LOG_ERROR, "block data length mismatch\n");
         skip_bits(gbp, 8);
     }
@@ -841,7 +841,7 @@ static void generate_2_noise_channels(MLPDecodeContext *m, unsigned int substr)
 static void fill_noise_buffer(MLPDecodeContext *m, unsigned int substr)
 {
     SubStream *s = &m->substream[substr];
-    unsigned int i;
+    /* unsigned */ int i;
     uint32_t seed = s->noisegen_seed;
 
     for (i = 0; i < m->access_unit_size_pow2; i++) {
@@ -958,20 +958,26 @@ static int read_access_unit(AVCodecContext *avctx, void* data, int *data_size,
     uint16_t substream_data_len[MAX_SUBSTREAMS];
     uint8_t parity_bits;
 
-    if (buf_size < 4)
-        return 0;
+	if (buf_size < 4) {
+		return 0;
+	}
 
     length = (AV_RB16(buf) & 0xfff) * 2;
 
-    if (length < 4 || length > buf_size)
-        return -1;
+	if (length < 4 || (int)length > buf_size) {
+		return -1;
+	}
 
     init_get_bits(&gb, (buf + 4), (length - 4) * 8);
 
     m->is_major_sync_unit = 0;
+
     if (show_bits_long(&gb, 31) == (0xf8726fba >> 1)) {
-        if (read_major_sync(m, &gb) < 0)
+
+        if (read_major_sync(m, &gb) < 0) {
             goto error;
+		}
+
         m->is_major_sync_unit = 1;
         header_size += 28;
     }
@@ -1018,7 +1024,7 @@ static int read_access_unit(AVCodecContext *avctx, void* data, int *data_size,
             end = length - header_size - substr_header_size;
         }
 
-        if (end < substream_start) {
+        if (end < (int)substream_start) {
             av_log(avctx, AV_LOG_ERROR,
                    "Indicated end offset of substream %d data "
                    "is smaller than calculated start offset.\n",
@@ -1026,8 +1032,9 @@ static int read_access_unit(AVCodecContext *avctx, void* data, int *data_size,
             goto error;
         }
 
-        if (substr > m->max_decoded_substream)
-            continue;
+		if (substr > m->max_decoded_substream) {
+			continue;
+		}
 
         substream_parity_present[substr] = checkdata_present;
         substream_data_len[substr] = end - substream_start;
@@ -1124,7 +1131,7 @@ next_substr:
 
     rematrix_channels(m, m->max_decoded_substream);
 
-    if (output_data(m, m->max_decoded_substream, data, data_size) < 0)
+    if (output_data(m, m->max_decoded_substream, data, (unsigned int *)data_size) < 0)
         return -1;
 
     return length;

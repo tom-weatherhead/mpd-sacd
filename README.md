@@ -1,16 +1,13 @@
 # mpd-sacd
 A version of the mpd music player daemon that includes support for SACDs and DVD-A discs
 
-This project is a modified version of the code found here: https://sourceforge.net/projects/mpd.sacddecoder.p/files/
+This project is a fork of [this project](https://sourceforge.net/projects/mpd.sacddecoder.p/files/), which adds support for Super Audio CDs and DVD-Audio discs to [mpd](https://www.musicpd.org/).
 
 My modifications to this project are made primarily with macOS in mind.
 
-The original mpd:
+The original mpd can be found on GitHub [here](https://github.com/MusicPlayerDaemon/MPD).
 
-See https://www.musicpd.org/
-See https://github.com/MusicPlayerDaemon/MPD
-
-Config: See https://computingforgeeks.com/install-configure-mpd-ncmpcpp-macos/
+[Here](https://computingforgeeks.com/install-configure-mpd-ncmpcpp-macos/) is a useful guide to setting up mpd and the ncmpcpp player on macOS.
 
 ## To build or rebuild mpd-sacd
 
@@ -48,5 +45,4 @@ ninja -C output/release install
 - To update the mpd database: $ mpc update
 - To launch the rudimentary player: $ ncmpcpp
 
-Original documentation about compiling from source:
-https://mpd.readthedocs.io/en/stable/user.html#compiling-from-source
+[Here](https://mpd.readthedocs.io/en/stable/user.html#compiling-from-source) is the original documentation about compiling from the source.

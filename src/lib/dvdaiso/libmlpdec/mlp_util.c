@@ -335,6 +335,7 @@ uint32_t av_crc(const AVCRC *ctx, uint32_t crc, const uint8_t *buffer, size_t le
 int mlp_av_log_level = AV_LOG_INFO;
 
 void mlp_av_log_default_callback(void* avctx, int level, const char* fmt, va_list vl) {
+	(void)avctx; // Unused parameter
 
 	if (level > mlp_av_log_level) {
 		return;
@@ -507,4 +508,6 @@ void dsputil_init(DSPContext* p, AVCodecContext *avctx) {
 }
 
 void ff_mlp_init_x86(DSPContext* c, AVCodecContext *avctx) {
+	(void)c; // Unused parameter
+	(void)avctx; // Unused parameter
 }

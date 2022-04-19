@@ -69,6 +69,7 @@ static codepage_id_t codepage_ids[] = {
 
 static inline std::string charset_convert(const char* instring, size_t insize, uint8_t codepage_index) {
 	std::string utf8_string;
+
 #if defined(HAVE_ICONV)
 	if (codepage_index < sizeof(codepage_ids) / sizeof(*codepage_ids)) {
 		const char* codepage_name = codepage_ids[codepage_index].name;
@@ -87,6 +88,9 @@ static inline std::string charset_convert(const char* instring, size_t insize, u
 			iconv_close(conv);
 		}
 	}
+#else
+	(void)insize; // Unused parameter
+	(void)codepage_index; // Unused parameter
 #endif
 	utf8_string = instring;
 	return utf8_string;

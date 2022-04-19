@@ -150,10 +150,13 @@ typedef struct MLPParseContext
     int num_substreams;
 } MLPParseContext;
 
-static av_cold int mlp_init(AVCodecParserContext *s)	// s is unused
+static av_cold int mlp_init(AVCodecParserContext *s)
 {
-    ff_mlp_init_crc();
-    return 0;
+	(void)s; // Unused parameter
+
+	ff_mlp_init_crc();
+
+	return 0;
 }
 
 static int mlp_parse(AVCodecParserContext *s,
