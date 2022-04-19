@@ -561,7 +561,8 @@ FindAudioDeviceByName(const char *name)
 	static constexpr AudioObjectPropertyAddress aopa_hw_devices{
 		kAudioHardwarePropertyDevices,
 		kAudioObjectPropertyScopeGlobal,
-		kAudioObjectPropertyElementMaster,
+		// kAudioObjectPropertyElementMaster,
+		kAudioObjectPropertyElementMain,
 	};
 
 	const auto ids =

@@ -33,12 +33,12 @@ sacd_media_file_t::~sacd_media_file_t() {
 
 bool sacd_media_file_t::open(const char* path) {
 	int ret;
-	struct stat64 st;
+	struct stat st;
 	fd = ::open(path, O_RDONLY, 0);
 	if (fd < 0) {
 		return false;
 	}
-	ret = ::fstat64(fd, &st);
+	ret = ::fstat(fd, &st);	// ThAW 2022-04-18: Was fstat64()
 	if (ret < 0) {
 		::close(fd);
 		fd = -1;
@@ -75,8 +75,8 @@ int64_t sacd_media_file_t::get_position() {
 
 int64_t sacd_media_file_t::get_size() {
 	int ret;
-	struct stat64 st;
-	ret = ::fstat64(fd, &st);
+	struct stat st;
+	ret = ::fstat(fd, &st);	// ThAW 2022-04-18: Was fstat64()
 	if (ret < 0) {
 		return 0;
 	}

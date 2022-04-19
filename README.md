@@ -19,6 +19,7 @@ Install dependencies via Homebrew:
 ```sh
 brew install mpd
 brew install meson
+brew install ninja
 ```
 
 ```sh
